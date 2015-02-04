@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jt56.comm.system.dao.TlogDao" > 
+<!-- Result Map-->
+<resultMap id="BaseResultMap" type="jt56.comm.system.model.Tlog" >
+	<result column="id" property="id"/>
+	<result column="userid" property="userid"/>
+	<result column="username" property="username"/>
+	<result column="ip" property="ip"/>
+	<result column="operation_type" property="operation_type"/>
+	<result column="tablename" property="tablename"/>
+	<result column="tableid" property="tableid"/>
+	<result column="comment" property="comment"/>
+	<result column="ctime" property="ctime"/>
+</resultMap>
+       
+<!-- tlog table all fields -->
+<sql id="Base_Column_List" >
+	 id,userid,username,ip,operation_type,tablename,tableid,comment,ctime
+</sql>
+   
+   
+<!-- 查询条件 -->
+<sql id="Example_Where_Clause">
+where 1=1
+<trim  suffixOverrides="," >
+	<if test="entity.id != null and entity.id != ''" >
+	    and id =  #{entity.id}
+	</if>
+	<if test="entity.userid != null and entity.userid != ''" >
+	    and userid =  #{entity.userid}
+	</if>
+	<if test="entity.username != null and entity.username != ''" >
+	    and username =  #{entity.username}
+	</if>
+	<if test="entity.ip != null and entity.ip != ''" >
+	    and ip =  #{entity.ip}
+	</if>
+	<if test="entity.operation_type != null and entity.operation_type != ''" >
+	    and operation_type =  #{entity.operation_type}
+	</if>
+	<if test="entity.tablename != null and entity.tablename != ''" >
+	    and tablename =  #{entity.tablename}
+	</if>
+	<if test="entity.tableid != null and entity.tableid != ''" >
+	    and tableid =  #{entity.tableid}
+	</if>
+	<if test="entity.comment != null and entity.comment != ''" >
+	    and comment =  #{entity.comment}
+	</if>
+	<if test="entity.ctime != null and entity.ctime != ''" >
+	    and ctime =  #{entity.ctime}
+	</if>
+</trim>
+</sql>
+   
+
+<!-- 插入记录 -->
+<insert id="add" parameterType="jt56.comm.system.model.Tlog" >
+  insert into tlog(id,userid,username,ip,operation_type,tablename,tableid,comment,ctime)
+ values(#{id},#{userid},#{username},#{ip},#{operation_type},#{tablename},#{tableid},#{comment},#{ctime})
+</insert>
+
+<!-- 根据id，修改记录-->  
+ <update id="update" parameterType="jt56.comm.system.model.Tlog" >
+  update tlog set userid=#{userid},username=#{username},ip=#{ip},operation_type=#{operation_type},tablename=#{tablename},tableid=#{tableid},comment=#{comment},ctime=#{ctime} where id=#{id}
+ </update>
+
+<!-- 删除记录 -->
+<delete id="delete" parameterType="Object">
+	delete 	 from tlog where id = #{id}
+</delete>
+ 
+<!-- 根据id查询 操作日志记录 -->
+<select id="getEntityById"  resultMap="BaseResultMap" parameterType="string">
+	select <include refid="Base_Column_List" /> 
+	 from tlog where id = #{id}
+</select>
+
+<!-- 操作日志记录 列表总数-->
+<select id="queryTotal" resultType="java.lang.Integer"  parameterType="Object">
+	select count(1) from tlog 
+	<include refid="Example_Where_Clause"/>
+</select>
+  	
+<!-- 查询操作日志记录列表 -->
+<select id="queryEntityList" resultMap="BaseResultMap"  parameterType="jt56.comm.system.model.Tlog">
+	select 
+	<include refid="Base_Column_List"/>
+	from tlog 
+	<include refid="Example_Where_Clause"/>
+	<if test="sort!=null and sort!='' and order!=null and order!='' ">
+				ORDER BY ${sort}  ${order}
+	</if>
+</select>
+  	
+</mapper>   

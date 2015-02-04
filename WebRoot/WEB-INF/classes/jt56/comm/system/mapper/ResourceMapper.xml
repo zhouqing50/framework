@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jt56.comm.system.dao.ResourceDao">
+
+	<resultMap id="resourceResultMap" type="jt56.comm.system.model.Tresource">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="SEQ" property="seq" jdbcType="INTEGER" />
+		<result column="URL" property="url" jdbcType="VARCHAR" />
+		<result column="PID" property="pid" jdbcType="VARCHAR" />
+		<result column="ICON" property="icon" jdbcType="VARCHAR" />
+		<result column="TRESOURCETYPE_ID" property="resourceTypeId" jdbcType="VARCHAR" />		
+	</resultMap>
+	
+	<select id="getTresourceById" resultMap="resourceResultMap">
+		SELECT distinct * FROM tresource WHERE ID = #{id}
+	</select>
+	
+	<select id="getResourceByParams" parameterType="Map" resultMap="resourceResultMap">
+		SELECT distinct tr.* FROM tuser_trole ur, trole_tresource rr, tresource tr 
+		WHERE
+			ur.TROLE_ID = rr.TROLE_ID  AND tr.ID = rr.TRESOURCE_ID 
+			<if test="resourceTypeId!=null  and resourceTypeId!=''">
+				and tr.TRESOURCETYPE_ID = #{resourceTypeId}
+			</if>
+			<if test="userId!=null and userId!=''">
+				and ur.TUSER_ID = #{userId}
+			</if>
+
+		ORDER BY tr.SEQ ASC
+	</select>
+	
+	<select id="getResourceByRoleId" parameterType="String" resultMap="resourceResultMap">
+		SELECT distinct tr.* FROM trole_tresource rr 
+		LEFT JOIN tresource tr ON tr.ID = rr.TRESOURCE_ID
+		WHERE rr.TROLE_ID = #{id}
+	</select>
+	
+	<delete id="deleteTresourceByPid" parameterType="string">
+		DELETE FROM tresource WHERE PID = #{pid}
+	</delete>
+	
+	<delete id="delete" parameterType="string">
+		DELETE FROM tresource WHERE ID = #{id}
+	</delete>
+	
+	<delete id="deleteResourceAndRoleByPid" parameterType="string">
+		DELETE FROM trole_tresource 
+		WHERE TRESOURCE_ID = (SELECT tr.ID FROM tresource tr WHERE tr.PID = #{id} )
+	</delete>
+	
+	<delete id="deleteResourceAndRole" parameterType="string">
+		DELETE FROM trole_tresource WHERE TRESOURCE_ID = #{id} 
+	</delete>
+	
+	<insert id="save" parameterType="jt56.comm.system.model.Tresource">
+		INSERT INTO tresource
+		(ID, NAME, REMARK, SEQ, URL, PID, ICON, TRESOURCETYPE_ID)
+		VALUES(#{id}, #{name}, #{remark}, #{seq}, #{url}, #{pid}, #{icon}, #{resourceTypeId})
+	</insert>
+	
+	<!-- 更新 -->
+	<update id="update" parameterType="jt56.comm.system.model.Tresource">
+		UPDATE tresource SET
+		NAME = #{name},
+		REMARK = #{remark},
+		SEQ = #{seq},
+		URL = #{url},
+		PID = #{pid},
+		ICON = #{icon},
+		TRESOURCETYPE_ID = #{resourceTypeId}
+		WHERE ID = #{id}
+	</update>
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-config.dtd">  
+<configuration>  
+
+	<properties>
+		<property name="dialect" value="mysql"/>
+	</properties>
+
+    <!-- plugin标签将起到拦截将要进行的数据访问 ，并对sql语句进行处理 -->
+    <!-- dialect 指定访问的数据库种类  数据方言 -->
+    <!-- pageSqlId 指定拦截sql的id的特性 -->
+	<plugins>
+		<plugin interceptor="jt56.comm.system.interceptors.pagination.interceptor.PaginationInterceptor">
+		</plugin>
+	</plugins>
+</configuration>
