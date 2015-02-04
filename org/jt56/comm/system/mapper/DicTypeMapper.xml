@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jt56.comm.system.dao.DicTypeDao">
+
+	<resultMap id="dicResultMap" type="jt56.comm.system.model.DicType">
+		<id column="UID" property="uid" jdbcType="VARCHAR" />
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="TEXT" property="text" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="PID" property="pid" jdbcType="VARCHAR" />
+		<result column="SEQ" property="seq" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getDicTypeListByPid" resultMap="dicResultMap" parameterType="string">
+		SELECT * FROM dictype WHERE PID = #{pid}
+	</select>
+	
+	<select id="getDicTypeById" resultMap="dicResultMap" >
+		SELECT * FROM dictype WHERE ID = #{id}
+	</select>
+	
+	<select id="getDicTypeByPar" resultMap="dicResultMap" parameterType="map">
+		SELECT * FROM dictype WHERE 1=1
+
+			<if test="id!=null and id!='' ">
+				AND  ID = #{id}
+			</if>
+			<if test="uid!=null and uid!='' ">
+				AND  UID = #{uid}
+			</if>
+			<if test="pid!=null and pid!='' ">
+				AND  PID = #{pid}
+			</if>
+			<if test="text!=null and text!='' ">
+				AND  TEXT = #{text}
+			</if>
+
+	</select>
+	
+	<select id="getDicTypeByUId" resultMap="dicResultMap" >
+		SELECT * FROM dictype WHERE UID = #{uid}
+	</select>
+	
+	<select id="getDicTypeByPid" resultMap="dicResultMap" >
+		SELECT * FROM dictype WHERE  PID = #{pid}
+	</select>
+	
+	<select id="findPDicTypeList" resultMap="dicResultMap" >
+		SELECT * FROM dictype WHERE  PID = 'no'
+	</select>
+	
+	<delete id="delete" parameterType="string">
+		DELETE FROM dictype WHERE ID = #{id}
+	</delete>
+	
+	<delete id="deleteDicTypeByPid" parameterType="string">
+		DELETE FROM dictype WHERE PID = #{pid}
+	</delete>
+	
+	<select id="queryDicTypeList" parameterType="jt56.comm.system.model.DicType" resultMap="dicResultMap">
+		SELECT * FROM dictype
+		<where>
+			<if test="dic.text!=null and dic.text!='' ">
+				  TEXT '%${dic.text}%'
+			</if>
+		</where>
+		<if test="sort!=null and sort!='' and order!=null and order!='' ">
+				ORDER BY #{sort} #{order}
+		</if>
+		LIMIT #{pageNo, jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
+	</select>
+	
+	<select id="getAllDicTypeList" resultMap="dicResultMap">
+		SELECT * FROM dictype ORDER BY SEQ ASC
+	</select>
+	
+	<insert id="save" parameterType="jt56.comm.system.model.DicType">
+		INSERT INTO dictype
+		(UID, ID, TEXT, REMARK, PID, SEQ)
+		VALUES(#{uid}, #{id}, #{text}, #{remark}, #{pid}, #{seq})
+	</insert>
+	
+	<!-- 更新 -->
+	<update id="update" parameterType="jt56.comm.system.model.DicType">
+		UPDATE dictype SET
+		ID = #{id},
+		TEXT = #{text},
+		REMARK = #{remark},
+		SEQ = #{seq},
+		PID = #{pid}
+		WHERE UID = #{uid}
+	</update>
+</mapper>

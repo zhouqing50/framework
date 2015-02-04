@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jt56.comm.system.dao.RoleDao">
+
+	<resultMap id="roleResultMap" type="jt56.comm.system.model.Trole">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="SEQ" property="seq" jdbcType="INTEGER" />
+		<result column="PID" property="pid" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="userTresourceMap" type="jt56.comm.system.model.Tresource">
+		<result property="url" column="URL" />
+	</resultMap>
+	
+	<select id="getRoleByUserId" parameterType="string" resultMap="roleResultMap">
+		SELECT distinct tr.* FROM tuser_trole ur
+		LEFT JOIN trole tr ON tr.ID = ur.TROLE_ID
+		WHERE ur.TUSER_ID = #{id}
+		order by tr.SEQ
+	</select>
+	
+	<select id="getRoleByParams" parameterType="map" resultMap="roleResultMap">
+		SELECT distinct tr.* FROM tuser_trole ur
+		LEFT JOIN trole tr ON tr.ID = ur.TROLE_ID
+		<where>
+			<if test="id!=null and id!=''">
+				and ur.TUSER_ID = #{id}
+			</if>
+		</where>
+		order by tr.SEQ
+	</select>
+	
+	<select id="getRoleById" resultMap="roleResultMap">
+		SELECT * FROM trole WHERE ID = #{id}
+	</select>
+	
+	<select id="getRoleListByPid" parameterType="string" resultMap="roleResultMap">
+		SELECT * FROM trole WHERE PID = #{pid}
+	</select>
+	
+	<delete id="delete" parameterType="string">
+		DELETE FROM trole WHERE ID = #{id}
+	</delete>
+	
+	<delete id="deleteRoleAndResourceByPid" parameterType="string">
+		DELETE FROM trole_tresource 
+		WHERE TROLE_ID = (SELECT tr.ID FROM trole tr WHERE tr.PID = #{id} )
+	</delete>
+	
+	<delete id="deleteRoleByPid" parameterType="string">
+		DELETE FROM trole WHERE PID = #{pid}
+	</delete>
+	
+	<delete id="deleteRoleAndResourceByRid" parameterType="string">
+		DELETE FROM trole_tresource WHERE TROLE_ID = #{roleId}
+	</delete>
+
+	<select id="queryTotal" parameterType="jt56.comm.system.pageModel.Role" resultType="int">
+		SELECT count(NAME) FROM trole
+		<where>
+			<if test="user.name!=null and user.name!='' ">
+				NAME  LIKE '%${user.name}%'
+			</if>
+			<if test="user.createdatetimeStart!=null and user.createdatetimeStart!='' ">
+				AND CREATEDATETIME >= #{user.createdatetimeStart}
+			</if>
+			<if test="user.createdatetimeEnd!=null and user.createdatetimeEnd!='' ">
+				AND CREATEDATETIME = #{user.createdatetimeEnd}
+			</if>
+			<if test="user.modifydatetimeStart!=null and user.modifydatetimeStart!='' ">
+				AND MODIFYDATETIME >= #{user.modifydatetimeStart}
+			</if>
+			<if test="user.modifydatetimeEnd!=null and user.modifydatetimeEnd!='' ">
+				AND MODIFYDATETIME = #{user.modifydatetimeEnd}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="save" parameterType="jt56.comm.system.model.Trole">
+		INSERT INTO trole
+		(ID, NAME, REMARK, SEQ, PID)
+		VALUES(#{id}, #{name}, #{remark}, #{seq}, #{pid})
+	</insert>
+	
+	<insert id="saveRoleAndResource" parameterType="java.util.List">
+		INSERT INTO trole_tresource
+		(TROLE_ID, TRESOURCE_ID)
+		VALUES
+		<foreach collection="list" index="index" item="rrL" separator="," >   
+			(#{rrL.roleId}, #{rrL.resourceId})
+		</foreach>
+	</insert>
+	
+	<!-- 更新 -->
+	<update id="update" parameterType="jt56.comm.system.model.Trole">
+		UPDATE trole SET
+		NAME = #{name},
+		REMARK = #{remark},
+		SEQ = #{seq},
+		PID = #{pid}
+		WHERE ID = #{id}
+	</update>
+</mapper>

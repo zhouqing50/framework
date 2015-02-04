@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jt56.comm.system.dao.UserDao">
+
+	<resultMap id="userResultMap" type="jt56.comm.system.model.Tuser">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CREATEDATETIME" property="createdatetime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYDATETIME" property="modifydatetime" jdbcType="TIMESTAMP" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="PWD" property="pwd" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="userTresourceMap" type="jt56.comm.system.model.Tresource">
+		<result property="url" column="URL" />
+	</resultMap>
+	
+	<select id="getResourceById" resultMap="userTresourceMap">
+		SELECT tr.URL FROM tuser_trole ur
+		LEFT JOIN trole_tresource rr ON ur.TROLE_ID = rr.TROLE_ID
+		LEFT JOIN tresource tr ON tr.ID = rr.TRESOURCE_ID
+		WHERE ur.TUSER_ID = #{id}
+	</select>
+	
+	<select id="getUserById" resultMap="userResultMap">
+		SELECT * FROM Tuser WHERE ID = #{id}
+	</select>
+	
+	<select id="getUserAllById" resultMap="userResultMap">
+		SELECT * FROM Tuser WHERE ID = #{id}
+	</select>
+	
+	<delete id="delete" parameterType="string">
+		DELETE FROM Tuser WHERE ID = #{id}
+	</delete>
+	
+	<select id="findUserByParams" parameterType="jt56.comm.system.pageModel.User" resultMap="userResultMap">
+		SELECT * FROM Tuser
+		<where>
+			<if test="name!=null  and name!=''">
+				and NAME = #{name}
+			</if>
+			<if test="pwd!=null and pwd!=''">
+				and PWD = #{pwd}
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryUserList" parameterType="jt56.comm.system.pageModel.User" resultMap="userResultMap">
+		SELECT * FROM Tuser
+		<where>
+			<if test="user.name!=null and user.name!='' ">
+				NAME  LIKE '%${user.name}%'
+			</if>
+			<if test="user.createdatetimeStart!=null and user.createdatetimeStart!='' ">
+				AND CREATEDATETIME >= #{user.createdatetimeStart}
+			</if>
+			<if test="user.createdatetimeEnd!=null and user.createdatetimeEnd!='' ">
+				AND CREATEDATETIME = #{user.createdatetimeEnd}
+			</if>
+			<if test="user.modifydatetimeStart!=null and user.modifydatetimeStart!='' ">
+				AND MODIFYDATETIME >= #{user.modifydatetimeStart}
+			</if>
+			<if test="user.modifydatetimeEnd!=null and user.modifydatetimeEnd!='' ">
+				AND MODIFYDATETIME = #{user.modifydatetimeEnd}
+			</if>
+		</where>
+		<if test="sort!=null and sort!='' and order!=null and order!='' ">
+				ORDER BY ${sort}  ${order}
+		</if>
+	
+	</select>
+
+	<select id="queryTotal" parameterType="jt56.comm.system.pageModel.User" resultType="int">
+		SELECT count(NAME) FROM Tuser
+		<where>
+			<if test="user.name!=null and user.name!='' ">
+				NAME  LIKE '%${user.name}%'
+			</if>
+			<if test="user.createdatetimeStart!=null and user.createdatetimeStart!='' ">
+				AND CREATEDATETIME >= #{user.createdatetimeStart}
+			</if>
+			<if test="user.createdatetimeEnd!=null and user.createdatetimeEnd!='' ">
+				AND CREATEDATETIME = #{user.createdatetimeEnd}
+			</if>
+			<if test="user.modifydatetimeStart!=null and user.modifydatetimeStart!='' ">
+				AND MODIFYDATETIME >= #{user.modifydatetimeStart}
+			</if>
+			<if test="user.modifydatetimeEnd!=null and user.modifydatetimeEnd!='' ">
+				AND MODIFYDATETIME = #{user.modifydatetimeEnd}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="save" parameterType="jt56.comm.system.model.Tuser">
+		INSERT INTO Tuser
+		(ID, NAME, PWD, MODIFYDATETIME, CREATEDATETIME)
+		VALUES(#{id}, #{name}, #{pwd}, #{modifydatetime}, #{createdatetime})
+	</insert>
+	
+	<delete id="deleteUserAndRoleByUid" parameterType="string">
+		DELETE FROM tuser_trole WHERE TUSER_ID = #{id}
+	</delete>
+	
+	<insert id="saveUserAndRole" parameterType="java.util.List">
+		INSERT INTO tuser_trole
+		(TROLE_ID, TUSER_ID)
+		VALUES
+		<foreach collection="list" index="index" item="urL" separator="," >   
+			(#{urL.roleId}, #{urL.userId})
+		</foreach>
+	</insert>
+</mapper>

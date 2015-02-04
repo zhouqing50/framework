@@ -1,0 +1,80 @@
+package jt56.comm.system.interceptors.pagination.interceptor;
+
+import java.sql.Connection;
+import java.util.Properties;
+
+import jt56.comm.system.interceptors.pagination.dialect.Dialect;
+import jt56.comm.system.interceptors.pagination.dialect.MySqlDialect;
+import jt56.comm.system.interceptors.pagination.dialect.OracleDialect;
+
+import org.apache.ibatis.executor.statement.StatementHandler;
+import org.apache.ibatis.plugin.Interceptor;
+import org.apache.ibatis.plugin.Intercepts;
+import org.apache.ibatis.plugin.Invocation;
+import org.apache.ibatis.plugin.Plugin;
+import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.RowBounds;
+
+
+
+/**
+ * @Title PaginationInterceptor.java
+ * @Description:sql公共分页拦截器
+ * @author: liuxingmi
+ * @date(创建日期)：2013-3-20 上午11:35:26
+ * @company(公司)：深圳市彩讯科技有限公司
+ * @version 1.0
+ * @History(修改历史):
+ */
+@Intercepts({@Signature(type=StatementHandler.class,method="prepare",args={Connection.class})})
+public class PaginationInterceptor implements Interceptor{
+
+	public Object intercept(Invocation invocation) throws Throwable {
+		StatementHandler statementHandler = (StatementHandler)invocation.getTarget();
+//		BoundSql boundSql = statementHandler.getBoundSql();
+		MetaObject metaStatementHandler = MetaObject.forObject(statementHandler);
+		RowBounds rowBounds = (RowBounds)metaStatementHandler.getValue("delegate.rowBounds");
+		if(rowBounds == null || rowBounds == RowBounds.DEFAULT){
+			return invocation.proceed();
+		}
+		Configuration configuration = (Configuration)metaStatementHandler.getValue("delegate.configuration");
+		Dialect.Type databaseType  = null;
+		try{
+			databaseType = Dialect.Type.valueOf(configuration.getVariables().getProperty("dialect").toUpperCase());
+		} catch(Exception e){
+			//ignore
+		}
+		if(databaseType == null){
+			throw new RuntimeException("the value of the dialect property in configuration.xml is not defined : " + configuration.getVariables().getProperty("dialect"));
+		}
+		Dialect dialect = null;
+		switch(databaseType){
+			case MYSQL:
+				dialect = new MySqlDialect();
+				break;
+			case ORACLE:
+				dialect = new OracleDialect();
+				break;
+			default:
+				dialect = new MySqlDialect();
+				
+		}
+		
+		String originalSql = (String)metaStatementHandler.getValue("delegate.boundSql.sql");
+		metaStatementHandler.setValue("delegate.boundSql.sql", dialect.getLimitString(originalSql, rowBounds.getOffset(), rowBounds.getLimit()) );
+		metaStatementHandler.setValue("delegate.rowBounds.offset", RowBounds.NO_ROW_OFFSET );
+		metaStatementHandler.setValue("delegate.rowBounds.limit", RowBounds.NO_ROW_LIMIT );
+//		logger.debug("key="+boundSql.getSql());
+		return invocation.proceed();
+	}
+
+	public Object plugin(Object target) {
+		return Plugin.wrap(target, this);
+	}
+
+	public void setProperties(Properties properties) {
+	}
+
+}

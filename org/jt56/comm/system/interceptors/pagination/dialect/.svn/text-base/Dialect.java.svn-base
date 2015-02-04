@@ -1,0 +1,21 @@
+package cn.richinfo.cloudp.entity.pagination.dialect;
+
+/**
+ * @Title Dialect.java
+ * @Description:数据库方言
+ * @author: liuxingmi
+ * @date(创建日期)：2013-3-20 上午11:34:10
+ * @company(公司)：深圳市彩讯科技有限公司
+ * @version 1.0
+ * @History(修改历史):
+ */
+public abstract class Dialect {
+
+	public static enum Type{
+		MYSQL,
+		ORACLE,
+		MSSQL
+	}
+	
+	public abstract String getLimitString(String sql,int skipResults,int maxResults);
+}

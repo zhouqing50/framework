@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/Think/!svn/ver/39007/ThinkDrive_Cloudp_2013/branches/V2.4.0/cloudp.entity/src/main/java/cn/richinfo/cloudp/entity/pagination/dialect
+END
+MySqlPageHepler.java
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/Think/!svn/ver/39007/ThinkDrive_Cloudp_2013/branches/V2.4.0/cloudp.entity/src/main/java/cn/richinfo/cloudp/entity/pagination/dialect/MySqlPageHepler.java
+END
+Dialect.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/Think/!svn/ver/39007/ThinkDrive_Cloudp_2013/branches/V2.4.0/cloudp.entity/src/main/java/cn/richinfo/cloudp/entity/pagination/dialect/Dialect.java
+END
+MySqlDialect.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/Think/!svn/ver/39007/ThinkDrive_Cloudp_2013/branches/V2.4.0/cloudp.entity/src/main/java/cn/richinfo/cloudp/entity/pagination/dialect/MySqlDialect.java
+END
+OracleDialect.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/Think/!svn/ver/39007/ThinkDrive_Cloudp_2013/branches/V2.4.0/cloudp.entity/src/main/java/cn/richinfo/cloudp/entity/pagination/dialect/OracleDialect.java
+END
