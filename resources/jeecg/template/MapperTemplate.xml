@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${bussPackage}.${entityPackage}.dao.${className}Dao" > 
+<!-- Result Map-->
+<resultMap id="BaseResultMap" type="${bussPackage}.${entityPackage}.entity.$!{className}" >
+#foreach($item in $!{columnDatas})
+	<result column="$!item.columnName" property="$item.columnName"/>
+#end
+</resultMap>
+       
+<!-- $!{tableName} table all fields -->
+<sql id="Base_Column_List" >
+	 $!{SQL.columnFields}
+</sql>
+   
+   
+<!-- 查询条件 -->
+<sql id="Example_Where_Clause">
+where 1=1
+<trim  suffixOverrides="," >
+#foreach($item in $!{columnDatas})
+	#set($testStr = $!item.columnName + " != null and " + $!item.columnName + " != ''")
+	#if($!item.dataType == 'String')
+		#set($testStr = $!testStr + " and " + $!item.columnName + " != ''")
+ 	#end
+<if test="$!testStr" >
+	    and $!item.columnName =  #{$!item.columnName}
+	</if>
+#end
+</trim>
+</sql>
+   
+
+<!-- 插入记录 -->
+<insert id="add" parameterType="${bussPackage}.${entityPackage}.entity.$!{className}" >
+#if  ($keyType =='02')
+<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+	SELECT LAST_INSERT_ID()
+  </selectKey>
+#end
+  $!{SQL.insert}
+</insert>
+
+<!-- 根据id，修改记录-->  
+ <update id="update" parameterType="${bussPackage}.${entityPackage}.entity.$!{className}" >
+  $!{SQL.update}
+ </update>
+
+<!-- 删除记录 -->
+<delete id="delete" parameterType="Object">
+	$!{SQL.delete}
+</delete>
+ 
+<!-- 根据id查询 ${codeName} -->
+<select id="getEntityById"  resultMap="BaseResultMap" parameterType="string">
+	$!{SQL.selectById}
+</select>
+
+<!-- ${codeName} 列表总数-->
+<select id="queryTotal" resultType="java.lang.Integer"  parameterType="Object">
+	select count(1) from ${tableName} 
+	<include refid="Example_Where_Clause"/>
+</select>
+  	
+<!-- 查询${codeName}列表 -->
+<select id="queryEntityList" resultMap="BaseResultMap"  parameterType="${bussPackage}.${entityPackage}.entity.$!{className}">
+	select 
+	<include refid="Base_Column_List"/>
+	from ${tableName} 
+	<include refid="Example_Where_Clause"/>
+	<if test="sort!=null and sort!='' and order!=null and order!='' ">
+				ORDER BY ${sort}  ${order}
+	</if>
+</select>
+  	
+</mapper>   
